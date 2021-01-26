@@ -1,0 +1,26 @@
+{
+  "name": "BooksApi",
+  "version": "1.0.0",
+  "description": "First Api Project With Nodejs And MongoDB",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/clubofcodes/BooksApi.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/clubofcodes/BooksApi/issues"
+  },
+  "homepage": "https://github.com/clubofcodes/BooksApi#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "mongojs": "^3.1.0",
+    "mongoose": "^5.11.13"
+  }
+}
