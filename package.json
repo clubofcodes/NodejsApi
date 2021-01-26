@@ -2,9 +2,9 @@
   "name": "NodejsApi",
   "version": "1.0.0",
   "description": "First Api Project With Nodejs And MongoDB",
-  "main": "Index.js",
+  "main": "index.js",
   "scripts": {
-    "start": "node Index",
+    "start": "node index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
