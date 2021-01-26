@@ -8,7 +8,7 @@ mongoose.connect("mongodb+srv://RJ:N443r03-@cluster0.dybb0.mongodb.net/students?
         const app = express();
         app.use("/api",route);
         app.listen(process.env.PORT || 3000, () => {
-            console.log('Server Started....!!');
+            console.log('Server Got Started....!!');
         })
     }
 );
