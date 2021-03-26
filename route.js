@@ -54,16 +54,33 @@ router.delete("/bookdata/:id", async (req, res) => {
     });
 });
 
-//user registration
-router.post("/signup", async (req, res) => {
-    const salt = await bcrypt.genSalt(10);
-    const hashedPswd = await bcrypt.hash(req.body.pwd, salt);
-    const user = new User({
-        username: req.body.uname,
-        password: hashedPswd,
-        token: req.body.pwd
-    });
+// 2nd routes for rk_users collection or 'user' model
+router.get("/users", async (req, res) => {
+    const users = await User.find();
+    res.send(users);
+});
 
+router.get("/users/:uid", async (req, res) => {
+    const users = await User.find({ uid: req.params.uid });
+    res.send(users);
+});
+
+//user registration  => changes: (/signup)
+router.post("/users", async (req, res) => {
+    // const salt = await bcrypt.genSalt(10);
+    // const hashedPswd = await bcrypt.hash(req.body.pwd, salt);
+    const user = new User({
+        fullname: req.body.fullname,
+        uid: req.body.uid,
+        username: req.body.username,
+        password: req.body.pwd,
+        department: req.body.department,
+        cellno: req.body.cellno,
+        dob: req.body.dob,
+        gender: req.body.gender
+        // token: req.body.pwd
+    });
+    console.log(user);
     await user.save();
     res.send(user);
 });
