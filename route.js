@@ -67,13 +67,13 @@ router.get("/users/:uid", async (req, res) => {
 
 //user registration  => changes: (/signup)
 router.post("/users", async (req, res) => {
-    // const salt = await bcrypt.genSalt(10);
-    // const hashedPswd = await bcrypt.hash(req.body.pwd, salt);
+    const salt = await bcrypt.genSalt(10);
+    const hashedPswd = await bcrypt.hash(req.body.password, salt);
     const user = new User({
         fullname: req.body.fullname,
         uid: req.body.uid,
         username: req.body.username,
-        password: req.body.pwd,
+        password: hashedPswd,
         department: req.body.department,
         cellno: req.body.cellno,
         dob: req.body.dob,
@@ -83,6 +83,35 @@ router.post("/users", async (req, res) => {
     console.log(user);
     await user.save();
     res.send(user);
+});
+
+router.patch("/users/:id", async (req, res) => {
+    try {
+        const user = await User.findOne({ _id: req.params.id });
+        user.fullname = req.body.fullname;
+        // user.uid = req.body.uid;
+        // user.username = req.body.username;
+        // user.department = req.body.department;
+        user.cellno = req.body.cellno;
+        // user.dob = req.body.dob;
+        // user.gender = req.body.gender;
+
+        await user.save();
+        res.send(user);
+
+    } catch (error) {
+        res.send(error);
+    }
+});
+
+router.delete("/users/:id", async (req, res) => {
+    await User.deleteOne({ _id: req.params.id }, (err, d) => {
+        if (err) return res.status(400).send({ error: "User is not found!! No such data." });
+        if (d.deletedCount > 0)
+            res.send("User data is deleted successfully");
+        else
+            res.send("Record doesn't exist or already deleted");
+    });
 });
 
 //user login
