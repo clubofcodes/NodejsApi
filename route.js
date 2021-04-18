@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const Book = require('./Models/book');
-const User = require('./Models/user');
+const Student = require('./Models/student');
+const User = require('./Models/alluser');
 const Videos = require('./Models/videos');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
@@ -11,7 +12,6 @@ router.get("/bookdata", async (req, res) => {
     const book = await Book.find();
     res.send(book);
 });
-
 //inserting records
 router.post("/bookdata", async (req, res) => {
     try {
@@ -26,8 +26,7 @@ router.post("/bookdata", async (req, res) => {
         res.send(error);
     }
 });
-
-// '/bookdata/:id' is place holder
+//updating records and '/bookdata/:id' is place holder
 router.patch("/bookdata/:id", async (req, res) => {
     try {
         const book = await Book.findOne({ _id: req.params.id });
@@ -42,7 +41,6 @@ router.patch("/bookdata/:id", async (req, res) => {
         res.send(error);
     }
 });
-
 //deleting records
 router.delete("/bookdata/:id", async (req, res) => {
     await Book.deleteOne({ _id: req.params.id }, (err, d) => {
@@ -54,22 +52,21 @@ router.delete("/bookdata/:id", async (req, res) => {
     });
 });
 
-// 2nd routes for rk_users collection or 'user' model
-router.get("/users", async (req, res) => {
-    const users = await User.find();
-    res.send(users);
+// 2nd routes for rk_users collection or 'student' model
+router.get("/students", async (req, res) => {
+    const students = await Student.find();
+    res.send(students);
 });
-
-router.get("/users/:uid", async (req, res) => {
-    const users = await User.find({ uid: req.params.uid });
-    res.send(users);
+//to find particular students using enrollment no.
+router.get("/students/:uid", async (req, res) => {
+    const students = await Student.find({ uid: req.params.uid });
+    res.send(students);
 });
-
-//user registration  => changes: (/signup)
-router.post("/users", async (req, res) => {
+//inserting student
+router.post("/students", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPswd = await bcrypt.hash(req.body.password, salt);
-    const user = new User({
+    const student = new Student({
         fullname: req.body.fullname,
         uid: req.body.uid,
         username: req.body.username,
@@ -77,35 +74,30 @@ router.post("/users", async (req, res) => {
         department: req.body.department,
         cellno: req.body.cellno,
         dob: req.body.dob,
-        gender: req.body.gender
-        // token: req.body.pwd
+        gender: req.body.gender,
+        token: req.body.pwd
     });
-    console.log(user);
-    await user.save();
-    res.send(user);
+    console.log(student);
+    await student.save();
+    res.send(student);
 });
-
-router.patch("/users/:id", async (req, res) => {
+//updating student
+router.patch("/students/:id", async (req, res) => {
     try {
-        const user = await User.findOne({ _id: req.params.id });
-        user.fullname = req.body.fullname;
-        // user.uid = req.body.uid;
-        // user.username = req.body.username;
-        // user.department = req.body.department;
-        user.cellno = req.body.cellno;
-        // user.dob = req.body.dob;
-        // user.gender = req.body.gender;
+        const student = await Student.findOne({ _id: req.params.id });
+        student.fullname = req.body.fullname;
+        student.cellno = req.body.cellno;
 
-        await user.save();
-        res.send(user);
+        await student.save();
+        res.send(student);
 
     } catch (error) {
         res.send(error);
     }
 });
-
-router.delete("/users/:id", async (req, res) => {
-    await User.deleteOne({ _id: req.params.id }, (err, d) => {
+//delete student
+router.delete("/students/:id", async (req, res) => {
+    await Student.deleteOne({ _id: req.params.id }, (err, d) => {
         if (err) return res.status(400).send({ error: "User is not found!! No such data." });
         if (d.deletedCount > 0)
             res.send("User data is deleted successfully");
@@ -114,7 +106,41 @@ router.delete("/users/:id", async (req, res) => {
     });
 });
 
-//user login
+//user registration using authentication(jwt)
+router.post("/signup", async (req, res) => {
+    const salt = await bcrypt.genSalt(10);
+    const hashedPswd = await bcrypt.hash(req.body.password, salt);
+    const user = new User({
+        fullname: req.body.fullname,
+        acc_id: req.body.email,
+        password: hashedPswd,
+    });
+    console.log(user);
+    await user.save();
+    res.send(user);
+});
+//user login using authentication(jwt)
+router.post('/login', async (req, res) => {
+    const user = await User.findOne({ acc_id: req.body.email });
+    if (!user) return res.send("You are not registered..!!");
+    const isValid = await bcrypt.compare(req.body.password, user.password);
+    if (!isValid) {
+        const invalidUser = "Wrong credentials or invalid User";
+        res.send({invalidUser});
+    } else {
+        const token = jwt.sign({ _id: user._id }, "privatekey");
+        // res.header('auth-token', token);
+        console.log(token);
+        res.send({token});
+    }
+});
+//fetch studentslist after Authentication using JWT.
+router.get("/authstudlist", auth, async (req, res) => {
+    const students = await Student.find();
+    res.send(students);
+});
+
+//user login using authentication(jwt)
 router.patch('/signin/:uname', async (req, res) => {
     const user = await User.findOne({ username: req.body.uname });
     if (!user) return res.send("You are not registered..!!");

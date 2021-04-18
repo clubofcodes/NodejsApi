@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 
-const userschema = mongoose.Schema({
+const studentschema = mongoose.Schema({
     fullname: String,
     uid: String,
     username: String,
@@ -13,4 +13,4 @@ const userschema = mongoose.Schema({
 });
 
 //Model name here must be singular & collection in db plural
-module.exports = mongoose.model("rk_user", userschema); //rk_user is model without 's' at prefix in collection.
+module.exports = mongoose.model("studentdetail", studentschema); //studentdetail is model without 's' at prefix as in collection.
