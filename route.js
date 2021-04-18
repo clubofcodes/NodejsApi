@@ -52,8 +52,9 @@ router.delete("/bookdata/:id", async (req, res) => {
     });
 });
 
-// 2nd routes for rk_users collection or 'student' model
-router.get("/students", async (req, res) => {
+// 2nd routes for student collection or 'student' model
+//fetch studentslist after Authentication using JWT.
+router.get("/students", auth, async (req, res) => {
     const students = await Student.find();
     res.send(students);
 });
@@ -106,6 +107,7 @@ router.delete("/students/:id", async (req, res) => {
     });
 });
 
+//-------------------JSONWebToken Api Routes------------------
 //user registration using authentication(jwt)
 router.post("/signup", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
@@ -134,11 +136,6 @@ router.post('/login', async (req, res) => {
         res.send({token});
     }
 });
-//fetch studentslist after Authentication using JWT.
-router.get("/authstudlist", auth, async (req, res) => {
-    const students = await Student.find();
-    res.send(students);
-});
 
 //user login using authentication(jwt)
 router.patch('/signin/:uname', async (req, res) => {
@@ -157,7 +154,6 @@ router.patch('/signin/:uname', async (req, res) => {
         res.send(user);
     }
 });
-
 //fetch Authenticated using JWT "pvbooks=privatebooks"
 router.get("/pvbooks", auth, (req, res) => {
     res.json({
@@ -165,6 +161,7 @@ router.get("/pvbooks", auth, (req, res) => {
         desc: "Comming Soon"
     });
 });
+//-------------------JSON Web Token Api Routes------------------
 
 //-------------------videos api project------------------
 router.get("/videosdata", auth, async (req, res) => {
