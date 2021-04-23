@@ -124,7 +124,10 @@ router.post("/signup", async (req, res) => {
 //user login using authentication(jwt)
 router.post('/login', async (req, res) => {
     const user = await User.findOne({ acc_id: req.body.email });
-    if (!user) return res.send("You are not registered..!!");
+    if (!user){
+        const notReg = "You are not registered..!!";
+        return res.send({notReg});
+    }
     const isValid = await bcrypt.compare(req.body.password, user.password);
     if (!isValid) {
         const invalidUser = "Wrong credentials or invalid User";
